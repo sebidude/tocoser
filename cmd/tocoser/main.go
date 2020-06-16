@@ -30,13 +30,24 @@ func main() {
 	token = GetEnvOrDefault("TOKEN", "1234")
 	acmeDir = os.Getenv("ACMEDIR")
 	dnsname = os.Getenv("DNSNAME")
+	authuser := os.Getenv("AUTHUSER")
+	authpassword := os.Getenv("AUTHPASSWORD")
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(gin.Logger())
 
-	tocoser := r.Group("/content", checkToken)
+	if len(authuser) != 0 && len(authpassword) != 0 {
+
+		authorized := r.Group("/auth/content", gin.BasicAuth(gin.Accounts{
+			authuser: authpassword,
+		}))
+
+		authorized.StaticFS("", gin.Dir(contentDir, true))
+	}
+
+	tocoser := r.Group("/token/content", checkToken)
 	tocoser.StaticFS("", gin.Dir(contentDir, true))
 
 	if len(dnsname) == 0 || len(acmeDir) == 0 {
