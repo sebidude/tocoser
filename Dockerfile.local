@@ -1,0 +1,4 @@
+FROM scratch
+
+COPY build/linux/tocoser /usr/bin/tocoser
+ENTRYPOINT ["/usr/bin/tocoser"]

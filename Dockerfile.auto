@@ -1,0 +1,14 @@
+
+FROM golang:1.14-alpine as builder
+
+RUN apk add --no-cache --update git make
+RUN mkdir /build
+WORKDIR /build
+RUN git clone https://github.com/sebidude/tocoser.git
+WORKDIR /build/tocoser
+RUN make build-linux
+
+FROM scratch
+
+COPY --from=builder /build/tocoser/build/linux/tocoser /usr/bin/tocoser
+ENTRYPOINT ["/usr/bin/tocoser"]
