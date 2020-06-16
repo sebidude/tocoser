@@ -1,4 +1,9 @@
+FROM alpine as builder
+
+RUN apk add --no-cache --update ca-certificates
+
 FROM scratch
 
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY build/linux/tocoser /usr/bin/tocoser
 ENTRYPOINT ["/usr/bin/tocoser"]
